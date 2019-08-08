@@ -8,8 +8,6 @@ services:
      - NET_ADMIN
     ports:
      - "1194:1194/udp"
-     - "53:53/tcp"
-     - "53:53/udp"
     volumes:
      - config:/etc/openvpn
 
