@@ -3,15 +3,9 @@
 echo -n "Enter the FQDN of the client: "
 read CLIENTNAME
 
-docker-compose exec openvpn easyrsa build-client-full $CLIENTNAME nopass
-docker-compose exec openvpn ovpn_getclient $CLIENTNAME > certs/$CLIENTNAME.ovpn
+OVPN_DATA="openvpn_config"
 
-echo -n "Enter the last part of your desired client IP [10.42.0.xx]: "
-read IP_OCTET
+docker run -v $OVPN_DATA:/etc/openvpn --log-driver=none --rm -it kylemanna/openvpn easyrsa build-client-full $CLIENTNAME nopass
+docker run -v $OVPN_DATA:/etc/openvpn --log-driver=none --rm kylemanna/openvpn ovpn_getclient $CLIENTNAME > ${CLIENTNAME}.ovpn
 
-IP_OCTET_1=$(expr ${IP_OCTET} + 1)
-echo "ifconfig-push 10.42.0.${IP_OCTET} 10.42.0.${IP_OCTET_1}" > /opt/openvpn/conf/ccd/${CLIENTNAME}
-
-echo "cipher AES-256-CBC" >> certs/$CLIENTNAME.ovpn
-
-echo "Client certificate is now in certs/$CLIENTNAME.ovpn"
+echo "Client certificate is now in $CLIENTNAME.ovpn"
